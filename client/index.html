@@ -1,0 +1,31 @@
+<!-- client/index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat en Tiempo Real</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <header class="chat-header">
+            <h1>Chat Colaborativo</h1>
+            <div class="user-info">
+                <span id="username-display">Usuario</span>
+                <input type="text" id="username-input" placeholder="Cambiar nombre">
+                <button id="username-btn">Cambiar</button>
+            </div>
+        </header>
+        
+        <div class="chat-messages" id="messages-container"></div>
+        
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="Escribe tu mensaje...">
+            <button id="send-btn">Enviar</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
