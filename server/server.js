@@ -1,25 +1,25 @@
 const WebSocket = require('ws');
 const http = require('http');
-const uuid = require('uuid'); // Para generar IDs únicos
 
-// Crear servidor HTTP (opcional, para servir el cliente si está en el mismo proyecto)
+// Crear servidor HTTP y WebSocket
 const server = http.createServer();
 const wss = new WebSocket.Server({ server });
 
-// Almacén de conexiones y usuarios
+// Almacén de conexiones y contador de usuarios
 const clients = new Map();
+let userCounter = 0; // Contador para nombres secuenciales
 
 wss.on('connection', (ws) => {
-    // Generar un ID único y nombre de usuario temporal
-    const userId = uuid.v4().substr(0, 8);
-    const username = `Usuario_${userId}`;
+    // Incrementar contador y asignar nombre de usuario secuencial
+    userCounter++;
+    const username = `Usuario_${userCounter}`;
     
     // Almacenar la conexión
     clients.set(ws, { username });
     
     console.log(`Nueva conexión: ${username}`);
     
-    // Notificar a todos que un usuario se ha unido
+    // Notificar a todos los usuarios
     broadcast({
         type: 'notification',
         content: `${username} se ha unido al chat`
@@ -37,6 +37,7 @@ wss.on('connection', (ws) => {
             const data = JSON.parse(message);
             
             if (data.type === 'message') {
+                // Reenviar mensaje a todos los clientes
                 const userData = clients.get(ws);
                 broadcast({
                     type: 'message',
@@ -45,6 +46,7 @@ wss.on('connection', (ws) => {
                     timestamp: new Date().toISOString()
                 });
             } else if (data.type === 'rename' && data.username) {
+                // Cambiar nombre de usuario
                 const oldUsername = clients.get(ws).username;
                 clients.get(ws).username = data.username;
                 
@@ -67,10 +69,11 @@ wss.on('connection', (ws) => {
             type: 'notification',
             content: `${userData.username} ha abandonado el chat`
         });
-        console.log(`${username} se desconecto`);
+        console.log(`${userData.username} se desconectó`);
     });
 });
 
+// Función para enviar un mensaje a todos los clientes conectados
 function broadcast(message) {
     const data = JSON.stringify(message);
     
